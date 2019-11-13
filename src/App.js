@@ -37,7 +37,7 @@ class App extends Component {
     this.state = {
       text: "",
       songsLoaded: false,
-      songs:[],
+      tracks:[],
     };
   }
 
@@ -68,16 +68,30 @@ class App extends Component {
             <img src={logo} className="App-logo" alt="logo"/>
             <h1 className="App-title">Bienvenue sur le Blindtest</h1>
           </header>
+
           <div className="App-images">
-            <p>Il va falloir modifier le code pour faire un vrai Blindtest !</p>
+            <AlbumCover track={this.state.tracks[0].track}/>
           </div>
+
           <p>{this.state.tracks.length} chansons disponibles</p>
           <p>Première chanson: {this.state.tracks[0].track.name}</p>
+          <Sound url={this.state.tracks[0].track.preview_url} playStatus={Sound.status.PLAYING}/>
+
           <div className="App-buttons">
+            <Button>{this.state.tracks[0].track.name}</Button>
+            <Button>{this.state.tracks[1].track.name}</Button>
+            <Button>{this.state.tracks[2].track.name}</Button>
           </div>
         </div>
       );
     }
+  }
+}
+
+class AlbumCover extends Component {
+  render() {
+    const src = this.props.track.album.images[0].url;
+    return (<img src={src} style={{ width: 400, height: 400 }} />);
   }
 }
 
