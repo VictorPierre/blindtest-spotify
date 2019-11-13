@@ -7,7 +7,7 @@ import './App.css';
 import Sound from 'react-sound';
 import Button from './Button';
 
-const apiToken = 'BQDClZvrTNZWHRyn7K6LfWp_JVfyQ5qJch_t7yj1VD4AgPBD2nyNygi6eYI0oWL73TO5__8q_mxtxYomldfC6s-BQGrwcW5WA9FJcjCYEMZZ6VCyNXyEyulqcTWbERRdBV70QH4aUTb65LUI4eALIMrAUs2sSzJxKHLx5ESyviB_1g';
+const apiToken = 'BQDCaizcAeHjNnk55hbVqXDwkt5k3-W89BZ7nc4Dmk4fegCw7V2NGDen7XL8IqrxsWUkNer6oM_FZkU94iLtwXaoFW6Y_hH9v7HGUB7kLKcK1Duz6j267A-HrrwtT0dQD-xr7x7NHu1dO5NDmCOTOoxxZcoHUY1rl3hpequ5-I5C5A';
 
 function shuffleArray(array) {
   let counter = array.length;
@@ -26,7 +26,8 @@ function shuffleArray(array) {
 /* Return a random number between 0 included and x excluded */
 function getRandomNumber(x) {
   return Math.floor(Math.random() * x);
-}
+} 
+
 
 
 
@@ -38,6 +39,7 @@ class App extends Component {
       text: "",
       songsLoaded: false,
       tracks:[],
+      currentSongId: "",
     };
   }
 
@@ -51,9 +53,17 @@ class App extends Component {
     })
       .then(response => response.json())
       .then((data) => {
-        this.setState({ songsLoaded: true, tracks: data.items})
+        this.setState({ songsLoaded: true, tracks: shuffleArray(data.items), currentSongId:getRandomNumber(data.items.length)})
         console.log("Réponse reçue ! Voilà ce que j'ai reçu : ", data);
       })
+  }
+
+  checkAnswer(id){
+    if (id==this.state.currentSongId){
+      swal('Bravo', 'Sous-titre', 'success');
+    } else {
+      swal('Raté', 'Sous-titre', 'error');
+    }
   }
 
   render() {
@@ -70,17 +80,17 @@ class App extends Component {
           </header>
 
           <div className="App-images">
-            <AlbumCover track={this.state.tracks[0].track}/>
+            <AlbumCover track={this.state.tracks[this.state.currentSongId].track}/>
           </div>
 
           <p>{this.state.tracks.length} chansons disponibles</p>
-          <p>Première chanson: {this.state.tracks[0].track.name}</p>
-          <Sound url={this.state.tracks[0].track.preview_url} playStatus={Sound.status.PLAYING}/>
+          <p>Chanson selectionnée: {this.state.tracks[this.state.currentSongId].track.name}</p>
+          <Sound url={this.state.tracks[this.state.currentSongId].track.preview_url} playStatus={Sound.status.PLAYING}/>
 
           <div className="App-buttons">
-            <Button>{this.state.tracks[0].track.name}</Button>
-            <Button>{this.state.tracks[1].track.name}</Button>
-            <Button>{this.state.tracks[2].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(this.state.tracks[0].track.id)}>{this.state.tracks[0].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(this.state.tracks[1].track.id)}>{this.state.tracks[1].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(this.state.tracks[2].track.id)}>{this.state.tracks[2].track.name}</Button>
           </div>
         </div>
       );
