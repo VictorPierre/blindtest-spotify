@@ -39,7 +39,8 @@ class App extends Component {
       text: "",
       songsLoaded: false,
       tracks:[],
-      currentSongId: "",
+      selected_tracks: [],
+      currentSongId: 0,
     };
   }
 
@@ -53,17 +54,22 @@ class App extends Component {
     })
       .then(response => response.json())
       .then((data) => {
-        this.setState({ songsLoaded: true, tracks: shuffleArray(data.items), currentSongId:getRandomNumber(data.items.length)})
+        this.setState({ songsLoaded: true, tracks: data.items, selected_tracks: shuffleArray(data.items).slice(0,3), currentSongId: getRandomNumber(3)});
+        this.initGame(3);
         console.log("Réponse reçue ! Voilà ce que j'ai reçu : ", data);
       })
   }
 
   checkAnswer(id){
     if (id==this.state.currentSongId){
-      swal('Bravo', 'Sous-titre', 'success');
+      swal('Bravo', 'Sous-titre', 'success').then(this.initGame(3));
     } else {
       swal('Raté', 'Sous-titre', 'error');
     }
+  }
+
+  initGame(n){
+    this.setState({selected_tracks: shuffleArray(this.state.tracks), currentSongId: getRandomNumber(n)});
   }
 
   render() {
@@ -80,17 +86,17 @@ class App extends Component {
           </header>
 
           <div className="App-images">
-            <AlbumCover track={this.state.tracks[this.state.currentSongId].track}/>
+            <AlbumCover track={this.state.selected_tracks[this.state.currentSongId].track}/>
           </div>
 
           <p>{this.state.tracks.length} chansons disponibles</p>
-          <p>Chanson selectionnée: {this.state.tracks[this.state.currentSongId].track.name}</p>
-          <Sound url={this.state.tracks[this.state.currentSongId].track.preview_url} playStatus={Sound.status.PLAYING}/>
+          <p>Chanson selectionnée: {this.state.selected_tracks[this.state.currentSongId].track.name}</p>
+          <Sound url={this.state.selected_tracks[this.state.currentSongId].track.preview_url} playStatus={Sound.status.PLAYING}/>
 
           <div className="App-buttons">
-            <Button onClick={() => this.checkAnswer(this.state.tracks[0].track.id)}>{this.state.tracks[0].track.name}</Button>
-            <Button onClick={() => this.checkAnswer(this.state.tracks[1].track.id)}>{this.state.tracks[1].track.name}</Button>
-            <Button onClick={() => this.checkAnswer(this.state.tracks[2].track.id)}>{this.state.tracks[2].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(0)}>{this.state.selected_tracks[0].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(1)}>{this.state.selected_tracks[1].track.name}</Button>
+            <Button onClick={() => this.checkAnswer(2)}>{this.state.selected_tracks[2].track.name}</Button>
           </div>
         </div>
       );
